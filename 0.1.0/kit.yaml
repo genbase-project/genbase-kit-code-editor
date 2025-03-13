@@ -1,0 +1,54 @@
+docVersion: v1
+id: "code-editor"
+version: "0.1.0"
+name: "Code Editor"
+description: "Simple code editor module with CLI command execution capability"
+owner: "genbase"
+
+environment:
+  - name: PASSWORD
+    description: "Password for code-server authentication"
+    required: false
+    default: "genbasepassword"
+  - name: SUDO_PASSWORD
+    description: "Password for sudo operations (if needed)"
+    required: false
+
+workflows:
+  run:
+    agent: "tasker"
+    instruction: "instructions.md"
+    actions:
+      - path: "actions:execute_command"
+        name: "execute_command"
+        description: "Executes an arbitrary CLI command"
+      - path: "actions:install_package"
+        name: "install_package"
+        description: "Installs a package using apt-get"
+      - path: "actions:create_file"
+        name: "create_file"
+        description: "Creates or updates a file with specified content"
+      - path: "actions:read_file"
+        name: "read_file"
+        description: "Reads the content of a file"
+    allow_multiple: true
+
+# No additional python dependencies needed
+dependencies: []
+
+# Using code-server image
+image: linuxserver/code-server:latest
+
+workspace:
+  files:
+    - path: "*"
+      description: "All project files"
+
+  ignore:
+    - ".git"
+    - "node_modules"
+    - "__pycache__"
+
+ports:
+  - name: "code-server"
+    internal: 8443
